@@ -3,33 +3,33 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kurai Studio — AI Web Builder</title>
+<title>NexForge Builder — AI Web Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   /* ═══════════════════════════════════════════
-     DESIGN TOKENS
+     DESIGN TOKENS (Cyber Green & Deep Blue)
   ═══════════════════════════════════════════ */
   :root {
-    --bg:        #07070F;
-    --panel:     #0E0E1A;
-    --surface:   #161625;
-    --border:    #252540;
-    --border-hi: #3D3D6B;
-    --accent:    #7C3AED;
-    --accent-lo: #4C1D95;
-    --accent-hi: #A78BFA;
-    --green:     #10B981;
+    --bg:        #060B11;
+    --panel:     #0B1520;
+    --surface:   #122030;
+    --border:    #1E324A;
+    --border-hi: #2D4B6E;
+    --accent:    #00E5FF; /* Electric Blue / Cyan */
+    --accent-lo: #004B57;
+    --accent-hi: #80F2FF;
+    --green:     #10B981; /* Neon Green */
     --green-lo:  #064E3B;
     --amber:     #F59E0B;
     --amber-lo:  #78350F;
     --red:       #EF4444;
     --red-lo:    #7F1D1D;
-    --text:      #E2E2F0;
-    --text-dim:  #8B8BAD;
-    --text-faint:#3A3A5C;
+    --text:      #E6F1FC;
+    --text-dim:  #94AEC6;
+    --text-faint:#3E5E80;
     --mono:      'JetBrains Mono', monospace;
     --sans:      'Inter', sans-serif;
     --radius:    8px;
@@ -82,7 +82,7 @@
     flex-direction: column;
     align-items: center;
     gap: 28px;
-    box-shadow: 0 0 80px rgba(124,58,237,0.12), 0 24px 64px rgba(0,0,0,0.5);
+    box-shadow: 0 0 80px rgba(0,229,255,0.08), 0 24px 64px rgba(0,0,0,0.6);
   }
 
   .login-logo {
@@ -90,7 +90,7 @@
   }
   .login-logo-mark {
     width: 42px; height: 42px;
-    background: linear-gradient(135deg, var(--accent), #EC4899);
+    background: linear-gradient(135deg, var(--green), var(--accent));
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
   }
@@ -102,7 +102,7 @@
     letter-spacing: -0.5px;
     color: var(--text);
   }
-  .login-logo-text span { color: var(--accent-hi); }
+  .login-logo-text span { color: var(--green); }
 
   .login-tagline {
     color: var(--text-dim);
@@ -137,8 +137,8 @@
   }
   .wmail-btn:hover {
     background: var(--border);
-    border-color: var(--accent);
-    box-shadow: 0 0 16px rgba(124,58,237,0.2);
+    border-color: var(--green);
+    box-shadow: 0 0 16px rgba(16,185,129,0.2);
   }
 
   .login-note {
@@ -146,38 +146,6 @@
     color: var(--text-faint);
     text-align: center;
   }
-
-  /* Key setup section inside login */
-  .key-setup {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .key-setup label {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .key-setup .input-row {
-    display: flex; gap: 8px;
-  }
-  .key-setup input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    outline: none;
-    transition: border 0.2s;
-  }
-  .key-setup input:focus { border-color: var(--accent); }
-  .key-setup input::placeholder { color: var(--text-faint); }
 
   /* ═══════════════════════════════════════════
      MAIN APP
@@ -208,7 +176,7 @@
   }
   .nav-logo-mark {
     width: 28px; height: 28px;
-    background: linear-gradient(135deg, var(--accent), #EC4899);
+    background: linear-gradient(135deg, var(--green), var(--accent));
     border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
@@ -220,7 +188,7 @@
     font-weight: 600;
     color: var(--text);
   }
-  .nav-logo-text span { color: var(--accent-hi); }
+  .nav-logo-text span { color: var(--green); }
 
   .nav-sep {
     width: 1px; height: 20px;
@@ -236,7 +204,7 @@
     padding: 4px 10px;
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--accent-hi);
+    color: var(--green);
   }
   .model-badge-dot {
     width: 6px; height: 6px;
@@ -262,7 +230,7 @@
   }
   .user-avatar {
     width: 20px; height: 20px;
-    background: linear-gradient(135deg, var(--accent), #EC4899);
+    background: linear-gradient(135deg, var(--green), var(--accent));
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 10px;
@@ -347,13 +315,13 @@
     margin-top: 2px;
   }
   .msg-avatar.user {
-    background: linear-gradient(135deg, var(--accent), #EC4899);
+    background: linear-gradient(135deg, var(--green), var(--accent));
     color: #fff;
   }
   .msg-avatar.ai {
     background: var(--surface);
     border: 1px solid var(--border);
-    color: var(--accent-hi);
+    color: var(--green);
   }
   .msg-body { flex: 1; }
   .msg-role {
@@ -387,7 +355,7 @@
   }
   .typing-dots span {
     width: 5px; height: 5px;
-    background: var(--accent-hi);
+    background: var(--green);
     border-radius: 50%;
     animation: typingBounce 1.2s infinite;
   }
@@ -430,7 +398,7 @@
     max-height: 120px;
     transition: border 0.2s;
   }
-  .chat-textarea:focus { border-color: var(--accent); }
+  .chat-textarea:focus { border-color: var(--green); }
   .chat-textarea::placeholder { color: var(--text-faint); }
 
   .icon-btn {
@@ -446,8 +414,8 @@
   }
   .icon-btn:hover { border-color: var(--border-hi); color: var(--text); }
   .icon-btn.active { background: var(--red-lo); border-color: var(--red); color: var(--red); }
-  .icon-btn.send { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .icon-btn.send:hover { background: #6D28D9; }
+  .icon-btn.send { background: var(--green); border-color: var(--green); color: #fff; }
+  .icon-btn.send:hover { background: #059669; }
   .icon-btn.send:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .speech-status {
@@ -499,7 +467,7 @@
     user-select: none;
   }
   .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent-hi); border-bottom-color: var(--accent); }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
 
   .tab-spacer { flex: 1; }
 
@@ -540,7 +508,7 @@
     border: none;
     outline: none;
     padding: 16px 20px;
-    color: #A9B1D6;
+    color: #A3BFFA;
     font-family: var(--mono);
     font-size: 13px;
     line-height: 1.7;
@@ -707,92 +675,10 @@
     width: 40px; height: 40px; opacity: 0.3;
   }
   .chat-empty p { font-size: 12px; opacity: 0.6; line-height: 1.6; }
-
-  /* GROQ KEY NAV */
-  .nav-key-badge {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--green);
-    cursor: pointer;
-  }
-  .nav-key-badge:hover { border-color: var(--green); }
-
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.hidden { display: none; }
-  .modal {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    width: 420px;
-    max-width: 90vw;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  }
-  .modal-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .modal input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 12px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    outline: none;
-    transition: border 0.2s;
-  }
-  .modal input:focus { border-color: var(--accent); }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-  .btn-primary {
-    padding: 8px 18px;
-    background: var(--accent);
-    border: none;
-    border-radius: var(--radius);
-    color: #fff;
-    font-family: var(--sans);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-primary:hover { background: #6D28D9; }
-  .btn-ghost {
-    padding: 8px 18px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text-dim);
-    font-family: var(--sans);
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-ghost:hover { background: var(--surface); color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
@@ -801,22 +687,15 @@
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
       </div>
-      <span class="login-logo-text">Kurai<span>Studio</span></span>
+      <span class="login-logo-text">NexForge<span>Builder</span></span>
     </div>
 
     <div class="login-tagline">
       AI-powered web builder running on<br>
-      <strong style="color:var(--accent-hi)">Kimi K2</strong> via Groq — build anything from a prompt.
+      <strong style="color:var(--green)">Kimi K2</strong> via Groq — build anything from a prompt.
     </div>
 
     <div class="login-divider"></div>
-
-    <div class="key-setup">
-      <label>Groq API Key</label>
-      <div class="input-row">
-        <input type="password" id="login-key-input" placeholder="gsk_..." autocomplete="off" />
-      </div>
-    </div>
 
     <button class="wmail-btn" id="wmail-login-btn">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -827,16 +706,13 @@
     </button>
 
     <p class="login-note">
-      Secure authentication via Wmail Identity Cluster.<br>
-      Your Groq key is stored in session memory only.
+      Secure authentication via Wmail Identity Cluster.
     </p>
   </div>
 </div>
 
-<!-- ═══════════════ MAIN APP ═══════════════ -->
 <div id="app" class="hidden">
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-logo">
       <div class="nav-logo-mark">
@@ -844,7 +720,7 @@
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
       </div>
-      <span class="nav-logo-text">Kurai<span>Studio</span></span>
+      <span class="nav-logo-text">NexForge<span>Builder</span></span>
     </div>
 
     <div class="nav-sep"></div>
@@ -855,13 +731,6 @@
     </div>
 
     <div class="nav-spacer"></div>
-
-    <div class="nav-key-badge" id="nav-key-btn" title="Change Groq Key">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-      </svg>
-      Groq Key
-    </div>
 
     <div class="user-chip" id="user-chip">
       <div class="user-avatar" id="user-avatar">?</div>
@@ -878,10 +747,8 @@
     </button>
   </nav>
 
-  <!-- WORKSPACE -->
   <div class="workspace">
 
-    <!-- LEFT: CHAT PANEL -->
     <div class="chat-panel">
       <div class="panel-header">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -923,10 +790,8 @@
       </div>
     </div>
 
-    <!-- RIGHT: CODE + PREVIEW -->
     <div class="right-panel">
 
-      <!-- TAB BAR -->
       <div class="tab-bar">
         <div class="tab active" data-tab="code" id="tab-code">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -964,7 +829,6 @@
         </button>
       </div>
 
-      <!-- CODE PANE -->
       <div class="pane active" id="pane-code">
         <textarea class="code-editor" id="code-editor" placeholder="// Generated code will appear here&#10;// Write a prompt and press Send to get started"></textarea>
         <div class="code-meta">
@@ -976,13 +840,12 @@
         </div>
       </div>
 
-      <!-- PREVIEW PANE -->
       <div class="pane" id="pane-preview">
         <div class="preview-toolbar">
           <div class="preview-dots">
             <span></span><span></span><span></span>
           </div>
-          <div class="preview-url">preview://kurai.local</div>
+          <div class="preview-url">preview://nexforge.local</div>
           <button class="icon-btn" id="refresh-btn" title="Refresh preview" style="width:28px;height:28px;">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"/>
@@ -1004,7 +867,6 @@
           </div>
         </div>
 
-        <!-- REVIEW OUTPUT -->
         <div class="review-panel" id="review-panel">
           <div class="review-header">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1022,24 +884,6 @@
   </div>
 </div>
 
-<!-- GROQ KEY MODAL -->
-<div class="modal-overlay hidden" id="key-modal">
-  <div class="modal">
-    <div class="modal-title">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-      </svg>
-      Update Groq API Key
-    </div>
-    <input type="password" id="modal-key-input" placeholder="gsk_..." autocomplete="off" />
-    <div class="modal-actions">
-      <button class="btn-ghost" id="modal-cancel">Cancel</button>
-      <button class="btn-primary" id="modal-save">Save Key</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast">
   <span id="toast-icon">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1051,11 +895,25 @@
 
 <script>
 /* ════════════════════════════════════════════
+   APP CONFIGURATION (API KEYS & ENDPOINTS)
+════════════════════════════════════════════ */
+const CONFIG = {
+  // Groq API Key'ini buraya gömebilirsin kanka (Boş bırakırsan uygulamada elle girilmesi gerekir)
+  groqKey: "YOUR_GROQ_API_KEY_HERE",
+  
+  // Wmail dokümantasyonundan aldığın API anahtarını tam buraya yapıştıracaksın:
+  wmailApiKey: "YOUR_WMAIL_KEY_HERE",
+  
+  // Endpoints
+  groqEndpoint: 'https://api.groq.com/openai/v1/chat/completions',
+  wmailAuthBase: 'https://authwmail.vercel.app/'
+};
+
+/* ════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════ */
 const state = {
   user: null,
-  groqKey: null,
   messages: [],          // Groq conversation history
   currentCode: '',
   isGenerating: false,
@@ -1063,9 +921,8 @@ const state = {
 };
 
 const GROQ_MODEL = 'moonshotai/kimi-k2';
-const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
-const SYSTEM_PROMPT = `You are Kurai Studio's AI engine powered by Kimi K2. You generate complete, self-contained HTML pages with embedded CSS and JavaScript.
+const SYSTEM_PROMPT = `You are NexForge Builder's AI engine powered by Kimi K2. You generate complete, self-contained HTML pages with embedded CSS and JavaScript.
 
 Rules:
 - ALWAYS output a complete, valid HTML document (<!DOCTYPE html> to </html>)
@@ -1082,78 +939,73 @@ When asked to REVIEW code, analyze for:
 Provide a concise, actionable bullet-point report.`;
 
 /* ════════════════════════════════════════════
-   WMAIL SSO
+   1. WMAIL REDIRECTION MATRIX METHOD
 ════════════════════════════════════════════ */
 function wmail_redirect_auth(callbackUrl) {
-  const ssoBase = 'https://wmail.app/sso';
-  const params = new URLSearchParams({ callback: callbackUrl });
-  window.location.href = `${ssoBase}?${params.toString()}`;
+  // Dokümantasyondaki parametre yapısına göre URL inşa ediliyor:
+  const params = new URLSearchParams({ 
+    redirect: callbackUrl,
+    apikey: CONFIG.wmailApiKey // Wmail anahtarını parametre olarak ekledik
+  });
+  window.location.href = `${CONFIG.wmailAuthBase}?${params.toString()}`;
 }
 
+/* ════════════════════════════════════════════
+   3. RESPONSE PARAMETER INGESTION & PARSING
+════════════════════════════════════════════ */
 function parseWmailCallback() {
   const params = new URLSearchParams(window.location.search);
   const status   = params.get('status');
   const username = params.get('username');
   const email    = params.get('email');
-  return { status, username, email };
+  const token    = params.get('token'); // Dokümantasyondaki token parametresini de yakalıyoruz
+  return { status, username, email, token };
 }
 
 function checkWmailCallback() {
-  const { status, username, email } = parseWmailCallback();
+  const { status, username, email, token } = parseWmailCallback();
   if (status === 'success' && username && email) {
-    // Clean the URL
+    // URL satırını temizle ve serialize et
     window.history.replaceState({}, document.title, window.location.pathname);
-    return { username, email };
+    return { username, email, token };
   }
   return null;
 }
 
 /* ════════════════════════════════════════════
-   SESSION STORAGE
+   SESSION STORAGE MANAGEMENT
 ════════════════════════════════════════════ */
-function saveSession(user, key) {
-  sessionStorage.setItem('kurai_user', JSON.stringify(user));
-  sessionStorage.setItem('kurai_key', key);
+function saveSession(user) {
+  sessionStorage.setItem('nexforge_user', JSON.stringify(user));
 }
 
 function loadSession() {
   try {
-    const user = JSON.parse(sessionStorage.getItem('kurai_user'));
-    const key  = sessionStorage.getItem('kurai_key');
-    return { user, key };
+    const user = JSON.parse(sessionStorage.getItem('nexforge_user'));
+    return { user };
   } catch { return {}; }
 }
 
 function clearSession() {
-  sessionStorage.removeItem('kurai_user');
-  sessionStorage.removeItem('kurai_key');
+  sessionStorage.removeItem('nexforge_user');
 }
 
 /* ════════════════════════════════════════════
-   AUTH FLOW
+   AUTH FLOW LIFECYCLE
 ════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  // First check for Wmail callback
+  // İlk olarak adresten dönen Wmail parametrelerini yakala
   const cbUser = checkWmailCallback();
   if (cbUser) {
-    // Grab pending key from sessionStorage (saved before redirect)
-    const pendingKey = sessionStorage.getItem('kurai_pending_key') || '';
-    sessionStorage.removeItem('kurai_pending_key');
-    if (pendingKey) {
-      saveSession(cbUser, pendingKey);
-      bootApp(cbUser, pendingKey);
-      return;
-    }
-    // No key — show login again with user info
-    showToast('Signed in via Wmail! Please enter your Groq key.', 'success');
-    showLogin();
+    saveSession(cbUser);
+    bootApp(cbUser);
     return;
   }
 
-  // Check existing session
-  const { user, key } = loadSession();
-  if (user && key) {
-    bootApp(user, key);
+  // Eğer adres satırında bir şey yoksa yerel session'a bak down et
+  const { user } = loadSession();
+  if (user) {
+    bootApp(user);
     return;
   }
 
@@ -1165,27 +1017,20 @@ function showLogin() {
   document.getElementById('app').classList.add('hidden');
 }
 
-function bootApp(user, key) {
+function bootApp(user) {
   state.user = user;
-  state.groqKey = key;
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
-  // Set user UI
+  // UI Güncelleme
   document.getElementById('user-name').textContent = user.username || user.email;
   document.getElementById('user-avatar').textContent = (user.username || user.email || 'U')[0].toUpperCase();
-  showToast(`Welcome, ${user.username || user.email}!`, 'success');
+  showToast(`Welcome to NexForge, ${user.username || user.email}!`, 'success');
 }
 
-/* WMAIL LOGIN BUTTON */
+/* ════════════════════════════════════════════
+   2. TRIGGER IMPLEMENTATION (BUTTON BIND)
+════════════════════════════════════════════ */
 document.getElementById('wmail-login-btn').addEventListener('click', () => {
-  const key = document.getElementById('login-key-input').value.trim();
-  if (!key) {
-    showToast('Please enter your Groq API key first.', 'error');
-    document.getElementById('login-key-input').focus();
-    return;
-  }
-  // Save key pending the redirect
-  sessionStorage.setItem('kurai_pending_key', key);
   const callbackUrl = window.location.origin + window.location.pathname;
   wmail_redirect_auth(callbackUrl);
 });
@@ -1194,7 +1039,6 @@ document.getElementById('wmail-login-btn').addEventListener('click', () => {
 document.getElementById('logout-btn').addEventListener('click', () => {
   clearSession();
   state.user = null;
-  state.groqKey = null;
   state.messages = [];
   state.currentCode = '';
   document.getElementById('chat-messages').innerHTML = `
@@ -1208,31 +1052,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
   updateCodeMeta('');
   refreshPreview('');
   showLogin();
-});
-
-/* ════════════════════════════════════════════
-   GROQ KEY MODAL
-════════════════════════════════════════════ */
-document.getElementById('nav-key-btn').addEventListener('click', () => {
-  document.getElementById('key-modal').classList.remove('hidden');
-  document.getElementById('modal-key-input').value = state.groqKey || '';
-  document.getElementById('modal-key-input').focus();
-});
-document.getElementById('modal-cancel').addEventListener('click', () => {
-  document.getElementById('key-modal').classList.add('hidden');
-});
-document.getElementById('modal-save').addEventListener('click', () => {
-  const key = document.getElementById('modal-key-input').value.trim();
-  if (!key) { showToast('Key cannot be empty.', 'error'); return; }
-  state.groqKey = key;
-  if (state.user) saveSession(state.user, key);
-  document.getElementById('key-modal').classList.add('hidden');
-  showToast('Groq key updated.', 'success');
-});
-document.getElementById('key-modal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('key-modal')) {
-    document.getElementById('key-modal').classList.add('hidden');
-  }
 });
 
 /* ════════════════════════════════════════════
@@ -1308,11 +1127,15 @@ function removeTyping() {
    GROQ API CALL (streaming)
 ════════════════════════════════════════════ */
 async function callGroq(messages, onChunk) {
-  const response = await fetch(GROQ_ENDPOINT, {
+  if (!CONFIG.groqKey || CONFIG.groqKey === "YOUR_GROQ_API_KEY_HERE") {
+    throw new Error("Hardcoded Groq API Key is missing in script configuration.");
+  }
+
+  const response = await fetch(CONFIG.groqEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${state.groqKey}`,
+      'Authorization': `Bearer ${CONFIG.groqKey}`,
     },
     body: JSON.stringify({
       model: GROQ_MODEL,
@@ -1356,7 +1179,6 @@ async function sendMessage() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text || state.isGenerating) return;
-  if (!state.groqKey) { showToast('Please set your Groq API key.', 'error'); return; }
 
   state.isGenerating = true;
   document.getElementById('send-btn').disabled = true;
@@ -1375,7 +1197,6 @@ async function sendMessage() {
         removeTyping();
         aiTextEl = addMessage('assistant', '');
       }
-      // Show truncated preview in chat
       const preview = accumulated.length > 200
         ? accumulated.slice(0, 200) + '...'
         : accumulated;
@@ -1387,7 +1208,6 @@ async function sendMessage() {
 
     state.messages.push({ role: 'assistant', content: full });
 
-    // Extract HTML
     const html = extractHTML(full);
     if (html) {
       state.currentCode = html;
@@ -1396,7 +1216,6 @@ async function sendMessage() {
       refreshPreview(html);
       aiTextEl.textContent = 'Code generated successfully. See the Code and Preview tabs.';
 
-      // Auto-switch to preview
       setTimeout(() => {
         document.querySelector('[data-tab="preview"]').click();
       }, 400);
@@ -1405,8 +1224,8 @@ async function sendMessage() {
     }
   } catch (err) {
     removeTyping();
-    addMessage('assistant', `Error: ${err.message}. Check your Groq key and try again.`);
-    showToast(`API Error: ${err.message}`, 'error');
+    addMessage('assistant', `Error: ${err.message}.`);
+    showToast(`Error: ${err.message}`, 'error');
   } finally {
     state.isGenerating = false;
     document.getElementById('send-btn').disabled = false;
@@ -1414,11 +1233,9 @@ async function sendMessage() {
 }
 
 function extractHTML(text) {
-  // Try to extract a full HTML doc
   const match = text.match(/<(!DOCTYPE html[\s\S]*?<\/html>)/i) ||
                 text.match(/<html[\s\S]*?<\/html>/i);
   if (match) return (match[1] ? '<!' : '') + match[0];
-  // If it looks like HTML overall
   if (text.includes('<html') || text.includes('<!DOCTYPE')) return text.trim();
   return null;
 }
@@ -1431,19 +1248,17 @@ document.getElementById('chat-input').addEventListener('keydown', (e) => {
   }
 });
 
-// Auto-resize textarea
 document.getElementById('chat-input').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
 /* ════════════════════════════════════════════
-   CODE EDITOR -> LIVE SYNC
+   CODE EDITOR LIVE SYNC
 ════════════════════════════════════════════ */
 document.getElementById('code-editor').addEventListener('input', function() {
   state.currentCode = this.value;
   updateCodeMeta(this.value);
-  // Live sync if preview tab is active
   if (document.getElementById('tab-preview').classList.contains('active')) {
     refreshPreview(this.value);
   }
@@ -1457,7 +1272,7 @@ function updateCodeMeta(code) {
 }
 
 /* ════════════════════════════════════════════
-   PREVIEW
+   PREVIEW MATRIX
 ════════════════════════════════════════════ */
 function refreshPreview(html) {
   const frame = document.getElementById('preview-frame');
@@ -1477,23 +1292,21 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
 });
 
 /* ════════════════════════════════════════════
-   KIMI CODE REVIEW
+   KIMI CODE REVIEW ENGINE
 ════════════════════════════════════════════ */
 document.getElementById('review-btn').addEventListener('click', async () => {
   if (!state.currentCode) { showToast('No code to review yet.', 'error'); return; }
-  if (!state.groqKey) { showToast('Please set your Groq API key.', 'error'); return; }
   if (state.isGenerating) return;
 
   state.isGenerating = true;
   document.getElementById('review-btn').textContent = 'Reviewing...';
 
-  // Switch to preview tab to show the review panel
   document.querySelector('[data-tab="preview"]').click();
 
   const reviewPanel = document.getElementById('review-panel');
   const reviewContent = document.getElementById('review-content');
   reviewPanel.classList.add('visible');
-  reviewContent.textContent = 'Analyzing your code...';
+  reviewContent.textContent = 'Analyzing your code with Kimi K2...';
 
   try {
     const reviewMessages = [
@@ -1511,11 +1324,11 @@ document.getElementById('review-btn').addEventListener('click', async () => {
 - Quick wins for improvement
 Keep it brief and actionable. Do NOT output code, just the review.`;
 
-    const response = await fetch(GROQ_ENDPOINT, {
+    const response = await fetch(CONFIG.groqEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${state.groqKey}`,
+        'Authorization': `Bearer ${CONFIG.groqKey}`,
       },
       body: JSON.stringify({
         model: GROQ_MODEL,
@@ -1551,7 +1364,7 @@ Keep it brief and actionable. Do NOT output code, just the review.`;
 });
 
 /* ════════════════════════════════════════════
-   DOWNLOAD ZIP
+   ZIP EXPORT MAPPING
 ════════════════════════════════════════════ */
 document.getElementById('download-btn').addEventListener('click', async () => {
   if (!state.currentCode) { showToast('No code to download yet.', 'error'); return; }
@@ -1559,22 +1372,21 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   const zip = new JSZip();
   zip.file('index.html', state.currentCode);
 
-  // Add a simple README
   const username = state.user?.username || 'user';
-  zip.file('README.md', `# Kurai Studio Export\n\nGenerated by Kurai Studio (moonshotai/kimi-k2 via Groq)\nAuthor: ${username}\nDate: ${new Date().toISOString()}\n\n## Files\n- \`index.html\` — Your generated web page\n\nOpen \`index.html\` in any browser to preview.\n`);
+  zip.file('README.md', `# NexForge Builder Export\n\nGenerated by NexForge Builder (moonshotai/kimi-k2 via Groq)\nAuthor: ${username}\nDate: ${new Date().toISOString()}\n\n## Files\n- \`index.html\` — Your generated web page\n\nOpen \`index.html\` in any browser to preview.\n`);
 
   const blob = await zip.generateAsync({ type: 'blob' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = 'kurai-project.zip';
+  a.download = 'nexforge-project.zip';
   a.click();
   URL.revokeObjectURL(url);
   showToast('ZIP downloaded!', 'success');
 });
 
 /* ════════════════════════════════════════════
-   SPEECH TO TEXT
+   SPEECH RECOGNITION
 ════════════════════════════════════════════ */
 let recognition = null;
 
@@ -1620,7 +1432,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     document.getElementById('speech-status').className = 'speech-status';
   };
 } else {
-  document.getElementById('speech-btn').title = 'Speech recognition not supported in this browser';
+  document.getElementById('speech-btn').title = 'Speech recognition not supported';
   document.getElementById('speech-btn').style.opacity = '0.3';
   document.getElementById('speech-btn').style.cursor = 'not-allowed';
 }
@@ -1635,7 +1447,7 @@ document.getElementById('speech-btn').addEventListener('click', () => {
 });
 
 /* ════════════════════════════════════════════
-   TOAST
+   TOAST APP MECHANISM
 ════════════════════════════════════════════ */
 let toastTimeout;
 function showToast(text, type = 'default') {
@@ -1664,18 +1476,13 @@ function showToast(text, type = 'default') {
 }
 
 /* ════════════════════════════════════════════
-   KEYBOARD SHORTCUTS
+   KEYBOARD SHORTCUT MATRIX
 ════════════════════════════════════════════ */
 document.addEventListener('keydown', (e) => {
-  // Ctrl/Cmd + Enter = send
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
     sendMessage();
-  }
-  // Escape = close modal
-  if (e.key === 'Escape') {
-    document.getElementById('key-modal').classList.add('hidden');
   }
 });
 </script>
 </body>
-</html>
+</html>/
