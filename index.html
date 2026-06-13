@@ -1,454 +1,1681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexForge - AI Website Builder</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://unpkg.com/@lucide/web"></script>
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --panel-dark: #1e293b;
-            --accent: #3b82f6;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-        }
-        .app-container {
-            display: flex;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 260px;
-            background-color: var(--panel-dark);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-right: 1px solid var(--border);
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 30px;
-        }
-        nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 15px;
-            cursor: pointer;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-        }
-        .nav-btn:hover, .nav-btn.active {
-            background-color: var(--border);
-            color: var(--text-main);
-        }
-        .user-status {
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #token-display {
-            font-size: 14px;
-            font-weight: 600;
-            color: #4ade80;
-        }
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #f87171;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            padding: 5px 0;
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-            height: 100vh;
-        }
-        .tab-content {
-            display: none;
-            height: 100%;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .workspace {
-            display: flex;
-            gap: 20px;
-            height: 100%;
-        }
-        .input-panel {
-            width: 40%;
-            background: var(--panel-dark);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .model-select, .env-input, .settings-input {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            color: white;
-            border-radius: 8px;
-            outline: none;
-        }
-        textarea {
-            flex-grow: 1;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            resize: none;
-            outline: none;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        .primary-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            transition: background 0.2s;
-        }
-        .primary-btn:hover {
-            background-color: #2563eb;
-        }
-        .preview-panel {
-            width: 60%;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .preview-header {
-            background: var(--panel-dark);
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-        .preview-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .action-btn {
-            background: var(--border);
-            border: none;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-        .action-btn:hover {
-            background-color: var(--border);
-        }
-        iframe {
-            flex-grow: 1;
-            border: none;
-            background: white;
-        }
-        .settings-container, .history-container {
-            background: var(--panel-dark);
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .setting-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .setting-group label {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        .project-item {
-            background: var(--bg-dark);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .delete-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kurai Studio — AI Web Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  /* ═══════════════════════════════════════════
+     DESIGN TOKENS
+  ═══════════════════════════════════════════ */
+  :root {
+    --bg:        #07070F;
+    --panel:     #0E0E1A;
+    --surface:   #161625;
+    --border:    #252540;
+    --border-hi: #3D3D6B;
+    --accent:    #7C3AED;
+    --accent-lo: #4C1D95;
+    --accent-hi: #A78BFA;
+    --green:     #10B981;
+    --green-lo:  #064E3B;
+    --amber:     #F59E0B;
+    --amber-lo:  #78350F;
+    --red:       #EF4444;
+    --red-lo:    #7F1D1D;
+    --text:      #E2E2F0;
+    --text-dim:  #8B8BAD;
+    --text-faint:#3A3A5C;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Inter', sans-serif;
+    --radius:    8px;
+    --radius-lg: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    overflow: hidden;
+  }
+
+  /* ═══════════════════════════════════════════
+     SVG ICON HELPER
+  ═══════════════════════════════════════════ */
+  .icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+  .icon svg { width: 100%; height: 100%; }
+
+  /* ═══════════════════════════════════════════
+     LOGIN SCREEN
+  ═══════════════════════════════════════════ */
+  #login-screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--bg);
+    z-index: 100;
+  }
+  #login-screen.hidden { display: none; }
+
+  .login-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 40px;
+    width: 420px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    box-shadow: 0 0 80px rgba(124,58,237,0.12), 0 24px 64px rgba(0,0,0,0.5);
+  }
+
+  .login-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .login-logo-mark {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), #EC4899);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-logo-mark svg { width: 22px; height: 22px; }
+  .login-logo-text {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .login-logo-text span { color: var(--accent-hi); }
+
+  .login-tagline {
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.6;
+    font-size: 13px;
+  }
+
+  .login-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .wmail-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .wmail-btn:hover {
+    background: var(--border);
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(124,58,237,0.2);
+  }
+
+  .login-note {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-align: center;
+  }
+
+  /* Key setup section inside login */
+  .key-setup {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .key-setup label {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .key-setup .input-row {
+    display: flex; gap: 8px;
+  }
+  .key-setup input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .key-setup input:focus { border-color: var(--accent); }
+  .key-setup input::placeholder { color: var(--text-faint); }
+
+  /* ═══════════════════════════════════════════
+     MAIN APP
+  ═══════════════════════════════════════════ */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  #app.hidden { display: none; }
+
+  /* NAV */
+  .navbar {
+    height: 52px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 14px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .nav-logo-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), #EC4899);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-logo-mark svg { width: 14px; height: 14px; }
+  .nav-logo-text {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .nav-logo-text span { color: var(--accent-hi); }
+
+  .nav-sep {
+    width: 1px; height: 20px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .model-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-hi);
+  }
+  .model-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .nav-spacer { flex: 1; }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px 4px 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .user-avatar {
+    width: 20px; height: 20px;
+    background: linear-gradient(135deg, var(--accent), #EC4899);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .nav-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { background: var(--surface); color: var(--text); border-color: var(--border-hi); }
+  .nav-btn.danger:hover { border-color: var(--red); color: var(--red); background: var(--red-lo); }
+
+  /* WORKSPACE */
+  .workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* LEFT: CHAT */
+  .chat-panel {
+    width: 340px;
+    min-width: 260px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .msg-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .msg-avatar.user {
+    background: linear-gradient(135deg, var(--accent), #EC4899);
+    color: #fff;
+  }
+  .msg-avatar.ai {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--accent-hi);
+  }
+  .msg-body { flex: 1; }
+  .msg-role {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+  }
+  .msg-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .msg-text.dim { color: var(--text-dim); font-style: italic; }
+
+  .msg-status {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* typing indicator */
+  .typing-dots {
+    display: flex; gap: 3px; align-items: center; padding: 2px 0;
+  }
+  .typing-dots span {
+    width: 5px; height: 5px;
+    background: var(--accent-hi);
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* CHAT INPUT */
+  .chat-input-area {
+    padding: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+  }
+
+  .chat-textarea {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+    outline: none;
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
+    transition: border 0.2s;
+  }
+  .chat-textarea:focus { border-color: var(--accent); }
+  .chat-textarea::placeholder { color: var(--text-faint); }
+
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--border-hi); color: var(--text); }
+  .icon-btn.active { background: var(--red-lo); border-color: var(--red); color: var(--red); }
+  .icon-btn.send { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .icon-btn.send:hover { background: #6D28D9; }
+  .icon-btn.send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .speech-status {
+    font-size: 11px;
+    color: var(--red);
+    display: flex; align-items: center; gap: 4px;
+    min-height: 16px;
+  }
+  .speech-status.listening::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+  }
+
+  /* RIGHT: CODE + PREVIEW */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* TAB BAR */
+  .tab-bar {
+    height: 44px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    padding: 0 14px;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .tab {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent-hi); border-bottom-color: var(--accent); }
+
+  .tab-spacer { flex: 1; }
+
+  .action-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    margin: 6px 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: var(--surface); color: var(--text); border-color: var(--border-hi); }
+  .action-btn.review { border-color: var(--amber-lo); color: var(--amber); }
+  .action-btn.review:hover { background: var(--amber-lo); border-color: var(--amber); }
+  .action-btn.download { border-color: var(--green-lo); color: var(--green); }
+  .action-btn.download:hover { background: var(--green-lo); border-color: var(--green); }
+
+  /* CONTENT PANES */
+  .pane {
+    flex: 1;
+    overflow: hidden;
+    display: none;
+  }
+  .pane.active { display: flex; flex-direction: column; }
+
+  /* CODE EDITOR */
+  .code-editor {
+    flex: 1;
+    width: 100%;
+    background: var(--bg);
+    border: none;
+    outline: none;
+    padding: 16px 20px;
+    color: #A9B1D6;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    resize: none;
+    tab-size: 2;
+  }
+  .code-editor::placeholder { color: var(--text-faint); }
+
+  .code-meta {
+    height: 28px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .code-meta span { color: var(--text-dim); }
+
+  /* PREVIEW */
+  .preview-pane {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-toolbar {
+    height: 36px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .preview-dots { display: flex; gap: 5px; }
+  .preview-dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .preview-dots span:nth-child(1) { background: #FF5F57; }
+  .preview-dots span:nth-child(2) { background: #FFBD2E; }
+  .preview-dots span:nth-child(3) { background: #28C840; }
+  .preview-url {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .preview-frame-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  .preview-empty {
+    position: absolute; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .preview-empty-icon {
+    width: 48px; height: 48px;
+    border: 2px dashed var(--text-faint);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.4;
+  }
+  .preview-empty p { font-size: 13px; opacity: 0.5; }
+
+  /* REVIEW OVERLAY */
+  .review-panel {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 12px 16px;
+    flex-shrink: 0;
+    display: none;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .review-panel.visible { display: block; }
+  .review-panel::-webkit-scrollbar { width: 4px; }
+  .review-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .review-header {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transform: translateY(60px);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+
+  /* SCROLLBAR GLOBAL */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* EMPTY STATE CHAT */
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .chat-empty-icon {
+    width: 40px; height: 40px; opacity: 0.3;
+  }
+  .chat-empty p { font-size: 12px; opacity: 0.6; line-height: 1.6; }
+
+  /* GROQ KEY NAV */
+  .nav-key-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+    cursor: pointer;
+  }
+  .nav-key-badge:hover { border-color: var(--green); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 420px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+  .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .modal input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .modal input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-primary {
+    padding: 8px 18px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: #6D28D9; }
+  .btn-ghost {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-ghost:hover { background: var(--surface); color: var(--text); }
+</style>
 </head>
 <body>
 
-    <div class="app-container">
-        <aside class="sidebar">
-            <div>
-                <div class="logo">NexForge</div>
-                <nav>
-                    <button class="nav-btn active" onclick="switchTab('builder')"><i data-lucide="cpu"></i> Builder</button>
-                    <button class="nav-btn" onclick="switchTab('history')"><i data-lucide="folder"></i> History</button>
-                    <button class="nav-btn" onclick="switchTab('settings')"><i data-lucide="settings"></i> Settings</button>
-                </nav>
-            </div>
-            <div class="user-status">
-                <span id="token-display">Tokens: 68/68</span>
-                <button class="logout-btn" onclick="logout()"><i data-lucide="log-out"></i> Logout</button>
-            </div>
-        </aside>
-
-        <main class="main-content">
-            <section id="tab-builder" class="tab-content active">
-                <div class="workspace">
-                    <div class="input-panel">
-                        <select id="model-select" class="model-select">
-                            <option value="llama3-70b-8192">Kimi K2 (GPToss120b Engine)</option>
-                            <option value="mixtral-8x7b-32768">Qwen-i (High-Context)</option>
-                            <option value="gemma2-9b-it">Gemma Core (Fast Inference)</option>
-                        </select>
-                        <textarea id="prompt-input" placeholder="Naber lan kodların efendisi! Ne inşa ediyoruz?"></textarea>
-                        <div class="setting-group">
-                            <label>Environment Variables</label>
-                            <input type="text" id="env-input" class="env-input" placeholder="KEY=value">
-                        </div>
-                        <button onclick="generateApp()" class="primary-btn">Generate & System Debug</button>
-                    </div>
-                    <div class="preview-panel">
-                        <div class="preview-header">
-                            <span>Live Preview System</span>
-                            <div class="preview-actions">
-                                <button class="action-btn" onclick="downloadZip()"><i data-lucide="download"></i> Download ZIP</button>
-                                <button class="action-btn" onclick="publishDeployment()"><i data-lucide="globe"></i> Publish</button>
-                            </div>
-                        </div>
-                        <iframe id="preview-frame" sandbox="allow-scripts allow-modals"></iframe>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-history" class="tab-content">
-                <div class="history-container">
-                    <h2>Project Core History</h2>
-                    <div id="projects-list">No active builds found.</div>
-                </div>
-            </section>
-
-            <section id="tab-settings" class="tab-content">
-                <div class="settings-container">
-                    <h2>System Control Panel</h2>
-                    <div class="setting-group">
-                        <label>Groq API Configuration Key</label>
-                        <input type="password" id="api-key-input" class="settings-input" placeholder="gsk_...">
-                    </div>
-                    <div class="setting-group">
-                        <label>License Encryption Keys (Supports 50+ Frameworks)</label>
-                        <input type="text" id="license-input" class="settings-input" placeholder="Enter license verification string">
-                        <button onclick="verifyLicense()" class="primary-btn" style="margin-top: 10px;">Verify License Structure</button>
-                    </div>
-                    <div id="license-status" style="font-size: 14px; color: var(--text-muted);">Status: Evaluation Protocol Active</div>
-                </div>
-            </section>
-        </main>
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <span class="login-logo-text">Kurai<span>Studio</span></span>
     </div>
 
-    <script>
-        let tokens = parseInt(localStorage.getItem('nexforge_tokens')) || 68;
-        let generatedCodeArchive = "";
-        let historyStore = JSON.parse(localStorage.getItem('nexforge_history')) || [];
+    <div class="login-tagline">
+      AI-powered web builder running on<br>
+      <strong style="color:var(--accent-hi)">Kimi K2</strong> via Groq — build anything from a prompt.
+    </div>
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            event.currentTarget.classList.add('active');
-            if(tabId === 'history') renderHistory();
-        }
+    <div class="login-divider"></div>
 
-        function updateInterfaceTokens() {
-            const display = document.getElementById('token-display');
-            if (tokens === 999999) {
-                display.innerText = "Tokens: Unlimited License Active";
-                display.style.color = "#60a5fa";
-            } else {
-                display.innerText = `Tokens: ${tokens}/68`;
-            }
-        }
+    <div class="key-setup">
+      <label>Groq API Key</label>
+      <div class="input-row">
+        <input type="password" id="login-key-input" placeholder="gsk_..." autocomplete="off" />
+      </div>
+    </div>
 
-        function verifyLicense() {
-            const input = document.getElementById('license-input').value.trim();
-            const status = document.getElementById('license-status');
-            if (input === "9r4dew-8327-3734444444") {
-                tokens = 999999;
-                localStorage.setItem('nexforge_tokens', tokens);
-                status.innerText = "Status: Lifetime Core Access Token Verified Safely";
-                status.style.color = "#4ade80";
-                updateInterfaceTokens();
-            } else {
-                status.innerText = "Verification Failed: Custom key blueprint match error";
-                status.style.color = "#f87171";
-            }
-        }
+    <button class="wmail-btn" id="wmail-login-btn">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      Sign in with Wmail SSO
+    </button>
 
-        async function generateApp() {
-            if (tokens <= 0) return alert("System Warning: Memory tokens depleted");
-            const key = document.getElementById('api-key-input').value.trim() || localStorage.getItem('groq_key');
-            if (!key) {
-                alert("Authorization missing: Insert Groq configuration string inside settings tab");
-                switchTab('settings');
-                return;
-            }
-            localStorage.setItem('groq_key', key);
-            
-            const prompt = document.getElementById('prompt-input').value;
-            const model = document.getElementById('model-select').value;
-            const env = document.getElementById('env-input').value;
+    <p class="login-note">
+      Secure authentication via Wmail Identity Cluster.<br>
+      Your Groq key is stored in session memory only.
+    </p>
+  </div>
+</div>
 
-            if (tokens !== 999999) {
-                tokens--;
-                localStorage.setItem('nexforge_tokens', tokens);
-                updateInterfaceTokens();
-            }
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<div id="app" class="hidden">
 
-            try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${key}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: model,
-                        messages: [{
-                            role: "user",
-                            content: `Compile an enterprise-grade standalone application package utilizing HTML5, responsive CSS structure, and modern clean JS blocks based on this request architecture: ${prompt}. Process metadata environment context: ${env}. Code block parsing directive: scan syntax, eliminate system compiler errors, resolve runtime vulnerabilities, output raw text template architecture only. Avoid markdown syntax wrap.`
-                        }]
-                    })
-                });
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">Kurai<span>Studio</span></span>
+    </div>
 
-                const data = await response.json();
-                let result = data.choices[0].message.content;
-                generatedCodeArchive = result.replace(/```html/g, "").replace(/```/g, "").trim();
-                document.getElementById('preview-frame').srcdoc = generatedCodeArchive;
-                
-                historyStore.push({ id: Date.now(), prompt: prompt, code: generatedCodeArchive });
-                localStorage.setItem('nexforge_history', JSON.stringify(historyStore));
-            } catch (err) {
-                alert("Transmission pipeline execution fault");
-            }
-        }
+    <div class="nav-sep"></div>
 
-        function downloadZip() {
-            if (!generatedCodeArchive) return alert("System build pipeline queue empty");
-            const zip = new JSZip();
-            zip.file("index.html", generatedCodeArchive);
-            zip.generateAsync({type:"blob"}).then(function(content) {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = "application_package.zip";
-                link.click();
-            });
-        }
+    <div class="model-badge">
+      <div class="model-badge-dot"></div>
+      moonshotai/kimi-k2
+    </div>
 
-        function publishDeployment() {
-            alert("Routing distribution: Allocation system registering targeted live subdomain space configuration under nexforge.vercel.app profile");
-        }
+    <div class="nav-spacer"></div>
 
-        function renderHistory() {
-            const container = document.getElementById('projects-list');
-            if (historyStore.length === 0) {
-                container.innerHTML = "No active builds found";
-                return;
-            }
-            container.innerHTML = historyStore.map(item => `
-                <div class="project-item">
-                    <span style="cursor:pointer; text-decoration:underline;" onclick="loadArchive(${item.id})">${item.prompt.substring(0, 40)}...</span>
-                    <button class="delete-btn" onclick="deleteArchive(${item.id})">Purge</button>
-                </div>
-            `).join('');
-        }
+    <div class="nav-key-badge" id="nav-key-btn" title="Change Groq Key">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+      </svg>
+      Groq Key
+    </div>
 
-        function loadArchive(id) {
-            const match = historyStore.find(i => i.id === id);
-            if (match) {
-                generatedCodeArchive = match.code;
-                document.getElementById('preview-frame').srcdoc = generatedCodeArchive;
-                document.getElementById('prompt-input').value = match.prompt;
-                switchTab('builder');
-            }
-        }
+    <div class="user-chip" id="user-chip">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span id="user-name">Loading...</span>
+    </div>
 
-        function deleteArchive(id) {
-            historyStore = historyStore.filter(i => i.id !== id);
-            localStorage.setItem('nexforge_history', JSON.stringify(historyStore));
-            renderHistory();
-        }
+    <button class="nav-btn danger" id="logout-btn">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
+    </button>
+  </nav>
 
-        function logout() {
-            localStorage.removeItem('groq_key');
-            alert("User credentials context wiped clean from systemic data engine");
-        }
+  <!-- WORKSPACE -->
+  <div class="workspace">
 
-        document.getElementById('api-key-input').value = localStorage.getItem('groq_key') || "";
-        updateInterfaceTokens();
-        lucide.createIcons();
-    </script>
+    <!-- LEFT: CHAT PANEL -->
+    <div class="chat-panel">
+      <div class="panel-header">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Conversation
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-empty" id="chat-empty">
+          <svg class="chat-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Describe what you want to build.<br/>Kimi K2 will generate the code.</p>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="speech-status" id="speech-status"></div>
+        <div class="input-row">
+          <button class="icon-btn" id="speech-btn" title="Voice input">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+          <textarea class="chat-textarea" id="chat-input" placeholder="Build me a landing page for a SaaS product..." rows="1"></textarea>
+          <button class="icon-btn send" id="send-btn" title="Send">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CODE + PREVIEW -->
+    <div class="right-panel">
+
+      <!-- TAB BAR -->
+      <div class="tab-bar">
+        <div class="tab active" data-tab="code" id="tab-code">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+          Code
+        </div>
+        <div class="tab" data-tab="preview" id="tab-preview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Preview
+        </div>
+
+        <div class="tab-spacer"></div>
+
+        <button class="action-btn review" id="review-btn" title="Ask Kimi to review the code for bugs">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Review with Kimi
+        </button>
+
+        <button class="action-btn download" id="download-btn" title="Download as ZIP">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download ZIP
+        </button>
+      </div>
+
+      <!-- CODE PANE -->
+      <div class="pane active" id="pane-code">
+        <textarea class="code-editor" id="code-editor" placeholder="// Generated code will appear here&#10;// Write a prompt and press Send to get started"></textarea>
+        <div class="code-meta">
+          <span id="code-lines">0 lines</span>
+          &bull;
+          <span id="code-chars">0 chars</span>
+          &bull;
+          HTML
+        </div>
+      </div>
+
+      <!-- PREVIEW PANE -->
+      <div class="pane" id="pane-preview">
+        <div class="preview-toolbar">
+          <div class="preview-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="preview-url">preview://kurai.local</div>
+          <button class="icon-btn" id="refresh-btn" title="Refresh preview" style="width:28px;height:28px;">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+        </div>
+        <div class="preview-frame-wrap">
+          <iframe class="preview-frame" id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+          <div class="preview-empty" id="preview-empty">
+            <div class="preview-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <p>No preview yet — generate some code first</p>
+          </div>
+        </div>
+
+        <!-- REVIEW OUTPUT -->
+        <div class="review-panel" id="review-panel">
+          <div class="review-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Kimi Code Review
+          </div>
+          <div id="review-content"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- GROQ KEY MODAL -->
+<div class="modal-overlay hidden" id="key-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+      </svg>
+      Update Groq API Key
+    </div>
+    <input type="password" id="modal-key-input" placeholder="gsk_..." autocomplete="off" />
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn-primary" id="modal-save">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </span>
+  <span id="toast-text"></span>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+const state = {
+  user: null,
+  groqKey: null,
+  messages: [],          // Groq conversation history
+  currentCode: '',
+  isGenerating: false,
+  isListening: false,
+};
+
+const GROQ_MODEL = 'moonshotai/kimi-k2';
+const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+
+const SYSTEM_PROMPT = `You are Kurai Studio's AI engine powered by Kimi K2. You generate complete, self-contained HTML pages with embedded CSS and JavaScript.
+
+Rules:
+- ALWAYS output a complete, valid HTML document (<!DOCTYPE html> to </html>)
+- Include all CSS in <style> tags, all JS in <script> tags
+- Make designs visually polished and modern
+- Respond ONLY with the HTML code — no markdown fences, no explanations
+- If the user asks to fix or modify, output the entire updated HTML file
+
+When asked to REVIEW code, analyze for:
+- JavaScript errors or undefined variables
+- Missing closing tags or invalid HTML
+- CSS conflicts or broken layouts
+- Broken links or placeholder content
+Provide a concise, actionable bullet-point report.`;
+
+/* ════════════════════════════════════════════
+   WMAIL SSO
+════════════════════════════════════════════ */
+function wmail_redirect_auth(callbackUrl) {
+  const ssoBase = 'https://wmail.app/sso';
+  const params = new URLSearchParams({ callback: callbackUrl });
+  window.location.href = `${ssoBase}?${params.toString()}`;
+}
+
+function parseWmailCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const status   = params.get('status');
+  const username = params.get('username');
+  const email    = params.get('email');
+  return { status, username, email };
+}
+
+function checkWmailCallback() {
+  const { status, username, email } = parseWmailCallback();
+  if (status === 'success' && username && email) {
+    // Clean the URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return { username, email };
+  }
+  return null;
+}
+
+/* ════════════════════════════════════════════
+   SESSION STORAGE
+════════════════════════════════════════════ */
+function saveSession(user, key) {
+  sessionStorage.setItem('kurai_user', JSON.stringify(user));
+  sessionStorage.setItem('kurai_key', key);
+}
+
+function loadSession() {
+  try {
+    const user = JSON.parse(sessionStorage.getItem('kurai_user'));
+    const key  = sessionStorage.getItem('kurai_key');
+    return { user, key };
+  } catch { return {}; }
+}
+
+function clearSession() {
+  sessionStorage.removeItem('kurai_user');
+  sessionStorage.removeItem('kurai_key');
+}
+
+/* ════════════════════════════════════════════
+   AUTH FLOW
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // First check for Wmail callback
+  const cbUser = checkWmailCallback();
+  if (cbUser) {
+    // Grab pending key from sessionStorage (saved before redirect)
+    const pendingKey = sessionStorage.getItem('kurai_pending_key') || '';
+    sessionStorage.removeItem('kurai_pending_key');
+    if (pendingKey) {
+      saveSession(cbUser, pendingKey);
+      bootApp(cbUser, pendingKey);
+      return;
+    }
+    // No key — show login again with user info
+    showToast('Signed in via Wmail! Please enter your Groq key.', 'success');
+    showLogin();
+    return;
+  }
+
+  // Check existing session
+  const { user, key } = loadSession();
+  if (user && key) {
+    bootApp(user, key);
+    return;
+  }
+
+  showLogin();
+});
+
+function showLogin() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+}
+
+function bootApp(user, key) {
+  state.user = user;
+  state.groqKey = key;
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  // Set user UI
+  document.getElementById('user-name').textContent = user.username || user.email;
+  document.getElementById('user-avatar').textContent = (user.username || user.email || 'U')[0].toUpperCase();
+  showToast(`Welcome, ${user.username || user.email}!`, 'success');
+}
+
+/* WMAIL LOGIN BUTTON */
+document.getElementById('wmail-login-btn').addEventListener('click', () => {
+  const key = document.getElementById('login-key-input').value.trim();
+  if (!key) {
+    showToast('Please enter your Groq API key first.', 'error');
+    document.getElementById('login-key-input').focus();
+    return;
+  }
+  // Save key pending the redirect
+  sessionStorage.setItem('kurai_pending_key', key);
+  const callbackUrl = window.location.origin + window.location.pathname;
+  wmail_redirect_auth(callbackUrl);
+});
+
+/* LOGOUT */
+document.getElementById('logout-btn').addEventListener('click', () => {
+  clearSession();
+  state.user = null;
+  state.groqKey = null;
+  state.messages = [];
+  state.currentCode = '';
+  document.getElementById('chat-messages').innerHTML = `
+    <div class="chat-empty" id="chat-empty">
+      <svg class="chat-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>Describe what you want to build.<br/>Kimi K2 will generate the code.</p>
+    </div>`;
+  document.getElementById('code-editor').value = '';
+  updateCodeMeta('');
+  refreshPreview('');
+  showLogin();
+});
+
+/* ════════════════════════════════════════════
+   GROQ KEY MODAL
+════════════════════════════════════════════ */
+document.getElementById('nav-key-btn').addEventListener('click', () => {
+  document.getElementById('key-modal').classList.remove('hidden');
+  document.getElementById('modal-key-input').value = state.groqKey || '';
+  document.getElementById('modal-key-input').focus();
+});
+document.getElementById('modal-cancel').addEventListener('click', () => {
+  document.getElementById('key-modal').classList.add('hidden');
+});
+document.getElementById('modal-save').addEventListener('click', () => {
+  const key = document.getElementById('modal-key-input').value.trim();
+  if (!key) { showToast('Key cannot be empty.', 'error'); return; }
+  state.groqKey = key;
+  if (state.user) saveSession(state.user, key);
+  document.getElementById('key-modal').classList.add('hidden');
+  showToast('Groq key updated.', 'success');
+});
+document.getElementById('key-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('key-modal')) {
+    document.getElementById('key-modal').classList.add('hidden');
+  }
+});
+
+/* ════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════ */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const name = tab.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`pane-${name}`).classList.add('active');
+    if (name === 'preview') refreshPreview(state.currentCode);
+  });
+});
+
+/* ════════════════════════════════════════════
+   CHAT UI HELPERS
+════════════════════════════════════════════ */
+function addMessage(role, content, status) {
+  const empty = document.getElementById('chat-empty');
+  if (empty) empty.remove();
+
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const isUser = role === 'user';
+
+  div.innerHTML = `
+    <div class="msg-avatar ${isUser ? 'user' : 'ai'}">
+      ${isUser
+        ? (state.user?.username || 'U')[0].toUpperCase()
+        : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+      }
+    </div>
+    <div class="msg-body">
+      <div class="msg-role">${isUser ? 'You' : 'Kimi K2'}</div>
+      <div class="msg-text ${content ? '' : 'dim'}" id="msg-text-${Date.now()}">${content || ''}</div>
+      ${status ? `<div class="msg-status">${status}</div>` : ''}
+    </div>`;
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div.querySelector('[id^="msg-text-"]');
+}
+
+function showTyping() {
+  const empty = document.getElementById('chat-empty');
+  if (empty) empty.remove();
+
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.id = 'typing-indicator';
+  div.innerHTML = `
+    <div class="msg-avatar ai">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="msg-body">
+      <div class="msg-role">Kimi K2</div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+/* ════════════════════════════════════════════
+   GROQ API CALL (streaming)
+════════════════════════════════════════════ */
+async function callGroq(messages, onChunk) {
+  const response = await fetch(GROQ_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${state.groqKey}`,
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
+      max_tokens: 8192,
+      stream: true,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let full = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+    for (const line of lines) {
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') break;
+      try {
+        const parsed = JSON.parse(data);
+        const delta = parsed.choices?.[0]?.delta?.content;
+        if (delta) { full += delta; onChunk(full); }
+      } catch {}
+    }
+  }
+  return full;
+}
+
+/* ════════════════════════════════════════════
+   SEND MESSAGE
+════════════════════════════════════════════ */
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || state.isGenerating) return;
+  if (!state.groqKey) { showToast('Please set your Groq API key.', 'error'); return; }
+
+  state.isGenerating = true;
+  document.getElementById('send-btn').disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  addMessage('user', text);
+  state.messages.push({ role: 'user', content: text });
+
+  showTyping();
+
+  try {
+    let aiTextEl = null;
+    const full = await callGroq(state.messages, (accumulated) => {
+      if (!aiTextEl) {
+        removeTyping();
+        aiTextEl = addMessage('assistant', '');
+      }
+      // Show truncated preview in chat
+      const preview = accumulated.length > 200
+        ? accumulated.slice(0, 200) + '...'
+        : accumulated;
+      aiTextEl.textContent = preview;
+    });
+
+    removeTyping();
+    if (!aiTextEl) aiTextEl = addMessage('assistant', '');
+
+    state.messages.push({ role: 'assistant', content: full });
+
+    // Extract HTML
+    const html = extractHTML(full);
+    if (html) {
+      state.currentCode = html;
+      document.getElementById('code-editor').value = html;
+      updateCodeMeta(html);
+      refreshPreview(html);
+      aiTextEl.textContent = 'Code generated successfully. See the Code and Preview tabs.';
+
+      // Auto-switch to preview
+      setTimeout(() => {
+        document.querySelector('[data-tab="preview"]').click();
+      }, 400);
+    } else {
+      aiTextEl.textContent = full;
+    }
+  } catch (err) {
+    removeTyping();
+    addMessage('assistant', `Error: ${err.message}. Check your Groq key and try again.`);
+    showToast(`API Error: ${err.message}`, 'error');
+  } finally {
+    state.isGenerating = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+function extractHTML(text) {
+  // Try to extract a full HTML doc
+  const match = text.match(/<(!DOCTYPE html[\s\S]*?<\/html>)/i) ||
+                text.match(/<html[\s\S]*?<\/html>/i);
+  if (match) return (match[1] ? '<!' : '') + match[0];
+  // If it looks like HTML overall
+  if (text.includes('<html') || text.includes('<!DOCTYPE')) return text.trim();
+  return null;
+}
+
+document.getElementById('send-btn').addEventListener('click', sendMessage);
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Auto-resize textarea
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+/* ════════════════════════════════════════════
+   CODE EDITOR -> LIVE SYNC
+════════════════════════════════════════════ */
+document.getElementById('code-editor').addEventListener('input', function() {
+  state.currentCode = this.value;
+  updateCodeMeta(this.value);
+  // Live sync if preview tab is active
+  if (document.getElementById('tab-preview').classList.contains('active')) {
+    refreshPreview(this.value);
+  }
+});
+
+function updateCodeMeta(code) {
+  const lines = code ? code.split('\n').length : 0;
+  const chars = code ? code.length : 0;
+  document.getElementById('code-lines').textContent = `${lines} lines`;
+  document.getElementById('code-chars').textContent = `${chars.toLocaleString()} chars`;
+}
+
+/* ════════════════════════════════════════════
+   PREVIEW
+════════════════════════════════════════════ */
+function refreshPreview(html) {
+  const frame = document.getElementById('preview-frame');
+  const empty = document.getElementById('preview-empty');
+  if (!html || !html.trim()) {
+    frame.srcdoc = '';
+    if (empty) empty.style.display = 'flex';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  frame.srcdoc = html;
+}
+
+document.getElementById('refresh-btn').addEventListener('click', () => {
+  refreshPreview(state.currentCode);
+  showToast('Preview refreshed.', 'success');
+});
+
+/* ════════════════════════════════════════════
+   KIMI CODE REVIEW
+════════════════════════════════════════════ */
+document.getElementById('review-btn').addEventListener('click', async () => {
+  if (!state.currentCode) { showToast('No code to review yet.', 'error'); return; }
+  if (!state.groqKey) { showToast('Please set your Groq API key.', 'error'); return; }
+  if (state.isGenerating) return;
+
+  state.isGenerating = true;
+  document.getElementById('review-btn').textContent = 'Reviewing...';
+
+  // Switch to preview tab to show the review panel
+  document.querySelector('[data-tab="preview"]').click();
+
+  const reviewPanel = document.getElementById('review-panel');
+  const reviewContent = document.getElementById('review-content');
+  reviewPanel.classList.add('visible');
+  reviewContent.textContent = 'Analyzing your code...';
+
+  try {
+    const reviewMessages = [
+      {
+        role: 'user',
+        content: `Please review the following HTML code for bugs, errors, and improvements. Be concise and use bullet points:\n\n\`\`\`html\n${state.currentCode}\n\`\`\``
+      }
+    ];
+
+    const reviewSystemPrompt = `You are a senior web developer reviewing HTML/CSS/JS code. Provide a concise bullet-point review covering:
+- HTML structure issues
+- CSS problems or conflicts
+- JavaScript errors or risks
+- Accessibility concerns
+- Quick wins for improvement
+Keep it brief and actionable. Do NOT output code, just the review.`;
+
+    const response = await fetch(GROQ_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.groqKey}`,
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [{ role: 'system', content: reviewSystemPrompt }, ...reviewMessages],
+        max_tokens: 1024,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const reviewText = data.choices?.[0]?.message?.content || 'No review returned.';
+    reviewContent.innerHTML = reviewText
+      .replace(/\n/g, '<br>')
+      .replace(/•/g, '&bull;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    showToast('Review complete.', 'success');
+  } catch (err) {
+    reviewContent.textContent = `Review failed: ${err.message}`;
+    showToast(`Review Error: ${err.message}`, 'error');
+  } finally {
+    state.isGenerating = false;
+    document.getElementById('review-btn').innerHTML = `
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      Review with Kimi`;
+  }
+});
+
+/* ════════════════════════════════════════════
+   DOWNLOAD ZIP
+════════════════════════════════════════════ */
+document.getElementById('download-btn').addEventListener('click', async () => {
+  if (!state.currentCode) { showToast('No code to download yet.', 'error'); return; }
+
+  const zip = new JSZip();
+  zip.file('index.html', state.currentCode);
+
+  // Add a simple README
+  const username = state.user?.username || 'user';
+  zip.file('README.md', `# Kurai Studio Export\n\nGenerated by Kurai Studio (moonshotai/kimi-k2 via Groq)\nAuthor: ${username}\nDate: ${new Date().toISOString()}\n\n## Files\n- \`index.html\` — Your generated web page\n\nOpen \`index.html\` in any browser to preview.\n`);
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'kurai-project.zip';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('ZIP downloaded!', 'success');
+});
+
+/* ════════════════════════════════════════════
+   SPEECH TO TEXT
+════════════════════════════════════════════ */
+let recognition = null;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  recognition.onstart = () => {
+    state.isListening = true;
+    document.getElementById('speech-btn').classList.add('active');
+    document.getElementById('speech-status').textContent = 'Listening...';
+    document.getElementById('speech-status').className = 'speech-status listening';
+  };
+
+  recognition.onresult = (e) => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    const input = document.getElementById('chat-input');
+    if (final) input.value = (input.value + ' ' + final).trim();
+    else document.getElementById('speech-status').textContent = interim || 'Listening...';
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  };
+
+  recognition.onerror = (e) => {
+    state.isListening = false;
+    document.getElementById('speech-btn').classList.remove('active');
+    document.getElementById('speech-status').textContent = `Mic error: ${e.error}`;
+    document.getElementById('speech-status').className = 'speech-status';
+    setTimeout(() => { document.getElementById('speech-status').textContent = ''; }, 3000);
+  };
+
+  recognition.onend = () => {
+    state.isListening = false;
+    document.getElementById('speech-btn').classList.remove('active');
+    document.getElementById('speech-status').textContent = '';
+    document.getElementById('speech-status').className = 'speech-status';
+  };
+} else {
+  document.getElementById('speech-btn').title = 'Speech recognition not supported in this browser';
+  document.getElementById('speech-btn').style.opacity = '0.3';
+  document.getElementById('speech-btn').style.cursor = 'not-allowed';
+}
+
+document.getElementById('speech-btn').addEventListener('click', () => {
+  if (!recognition) return;
+  if (state.isListening) {
+    recognition.stop();
+  } else {
+    recognition.start();
+  }
+});
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+let toastTimeout;
+function showToast(text, type = 'default') {
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toast-text');
+  const toastIcon = document.getElementById('toast-icon');
+
+  toastText.textContent = text;
+  toast.className = `toast ${type}`;
+
+  if (type === 'success') {
+    toastIcon.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  } else if (type === 'error') {
+    toastIcon.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+  } else {
+    toastIcon.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  }
+
+  clearTimeout(toastTimeout);
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
+
+/* ════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+════════════════════════════════════════════ */
+document.addEventListener('keydown', (e) => {
+  // Ctrl/Cmd + Enter = send
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    sendMessage();
+  }
+  // Escape = close modal
+  if (e.key === 'Escape') {
+    document.getElementById('key-modal').classList.add('hidden');
+  }
+});
+</script>
 </body>
 </html>
